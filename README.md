@@ -3,6 +3,9 @@
 * Speech-to-Text - https://diewland.github.io/ttsstt-th-demo/stt/
 * Text-to-Speech - https://diewland.github.io/ttsstt-th-demo/tts/
 
+### TODO
+* Android STT duplicate phrases - https://stackoverflow.com/questions/35112561/speech-recognition-api-duplicated-phrases-on-android
+
 ### References
 * https://github.com/w3c/speech-api
 * https://www.google.com/intl/en/chrome/demos/speech.html
