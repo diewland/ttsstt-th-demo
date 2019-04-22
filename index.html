@@ -55,6 +55,7 @@
       var recognizing = false;
       var ignore_onend;
       var start_timestamp;
+      var lastDebounceTranscript;
 
       // utility tools
       var two_line = /\n\n/g;
@@ -157,6 +158,10 @@
           var isFinal = event.results[i].isFinal && (confidence > 0);
 
           if (isFinal) {
+            // check duplicate result on android
+            if(transcript+confidence == lastDebounceTranscript) { return; }
+            lastDebounceTranscript = transcript+confidence;
+
             final_transcript += transcript;
           } else {
             interim_transcript += transcript;
