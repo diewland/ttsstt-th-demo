@@ -52,6 +52,7 @@
       var recognizing = false;
       var ignore_onend;
       var start_timestamp;
+      var lastDebounceTranscript;
 
       // utility tools
       var two_line = /\n\n/g;
@@ -148,10 +149,20 @@
           return;
         }
         for (var i = event.resultIndex; i < event.results.length; ++i) {
-          if (event.results[i].isFinal) {
-            final_transcript += event.results[i][0].transcript;
+
+          var transcript = event.results[i][0].transcript;
+          var confidence = event.results[i][0].confidence;
+          var isFinal = event.results[i].isFinal && (confidence > 0);
+
+          if (isFinal) {
+            // ignore duplicate result on android
+            if(transcript+confidence == lastDebounceTranscript) { return; }
+            lastDebounceTranscript = transcript+confidence;
+            console.log(lastDebounceTranscript);
+
+            final_transcript += " " + transcript;
           } else {
-            interim_transcript += event.results[i][0].transcript;
+            interim_transcript += " " + transcript;
           }
         }
         final_transcript = capitalize(final_transcript);
