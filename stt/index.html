@@ -155,14 +155,15 @@
           var isFinal = event.results[i].isFinal && (confidence > 0);
 
           if (isFinal) {
-            // ignore duplicate result on android
+            /*
+            // check duplicate result on android
             if(transcript+confidence == lastDebounceTranscript) { return; }
             lastDebounceTranscript = transcript+confidence;
             console.log(lastDebounceTranscript);
-
-            final_transcript += " " + transcript;
+            */
+            final_transcript += transcript;
           } else {
-            interim_transcript += " " + transcript;
+            interim_transcript += transcript;
           }
         }
         final_transcript = capitalize(final_transcript);
