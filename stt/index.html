@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- App style -->
+    <style>
+      .interim {
+        color: gray;
+      }
+      .final {
+        color: black;
+        padding-right: 3px;
+      }
+    </style>
+
+    <title>Speech to text Demo</title>
+  </head>
+  <body>
+    <div class='container'>
+
+      <h1>Speech to text Demo</h1>
+      <button type="button" id='btn-transcribe' class="btn btn-primary btn-lg my-3">Transcribe</button>
+      <span id='info'></span>
+      <blockquote class="blockquote">
+        <div id="results">
+          <span class="final" id="final_span"></span>
+          <span class="interim" id="interim_span"></span>
+        </div>
+      </blockquote>
+
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <script>
+
+      // REF
+      // * https://www.google.com/intl/en/chrome/demos/speech.html
+      // * https://mdn.github.io/web-speech-api/speech-color-changer/
+
+      var final_transcript = '';
+      var recognizing = false;
+      var ignore_onend;
+      var start_timestamp;
+
+      // utility tools
+      var two_line = /\n\n/g;
+      var one_line = /\n/g;
+      function linebreak(s) {
+        return s.replace(two_line, '<p></p>').replace(one_line, '<br>');
+      }
+
+      var first_char = /\S/;
+      function capitalize(s) {
+        return s.replace(first_char, function(m) { return m.toUpperCase(); });
+      }
+
+      function showInfo(msg){
+        $('#info').html(msg);
+      }
+
+      function upgrade(){
+        alert('Browser is not support');
+      }
+
+      function startButton(event) {
+        if (recognizing) {
+          recognition.stop();
+          return;
+        }
+        final_transcript = '';
+        recognition.lang = 'th-TH';
+        recognition.start();
+        ignore_onend = false;
+        final_span.innerHTML = '';
+        interim_span.innerHTML = '';
+        showInfo('info_allow');
+        start_timestamp = event.timeStamp;
+      }
+
+      // initialize recognition
+      var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
+      var recognition = new SpeechRecognition();
+
+      recognition.continuous = true;
+      recognition.interimResults = true;
+
+      recognition.onstart = function() {
+        recognizing = true;
+        showInfo('info_speak_now');
+      };
+
+      recognition.onerror = function(event) {
+        if (event.error == 'no-speech') {
+          showInfo('info_no_speech');
+          ignore_onend = true;
+        }
+        if (event.error == 'audio-capture') {
+          showInfo('info_no_microphone');
+          ignore_onend = true;
+        }
+        if (event.error == 'not-allowed') {
+          if (event.timeStamp - start_timestamp < 100) {
+            showInfo('info_blocked');
+          } else {
+            showInfo('info_denied');
+          }
+          ignore_onend = true;
+        }
+      };
+
+      recognition.onend = function() {
+        recognizing = false;
+        if (ignore_onend) {
+          return;
+        }
+        if (!final_transcript) {
+          showInfo('info_start');
+          return;
+        }
+        showInfo('');
+        /* select all text
+        if (window.getSelection) {
+          window.getSelection().removeAllRanges();
+          var range = document.createRange();
+          range.selectNode(document.getElementById('final_span'));
+          window.getSelection().addRange(range);
+        }
+        */
+      };
+
+      recognition.onresult = function(event) {
+        var interim_transcript = '';
+        if (typeof(event.results) == 'undefined') {
+          recognition.onend = null;
+          recognition.stop();
+          upgrade();
+          return;
+        }
+        for (var i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            final_transcript += event.results[i][0].transcript;
+          } else {
+            interim_transcript += event.results[i][0].transcript;
+          }
+        }
+        final_transcript = capitalize(final_transcript);
+        final_span.innerHTML = linebreak(final_transcript);
+        interim_span.innerHTML = linebreak(interim_transcript);
+        if (final_transcript || interim_transcript) {
+          // do something
+        }
+      };
+
+      // handle transcribe button
+      $('#btn-transcribe').click((evt) => {
+        let thiz = evt.target;
+        let ready_text = 'Transcribe';
+        let working_text = 'Working...';
+        let working = $(thiz).html() == working_text;
+
+        if(!working){ // press to start
+          // ui
+          $(thiz).html(working_text);
+          $(thiz).removeClass('btn-primary');
+          $(thiz).addClass('btn-danger');
+
+          // start
+          startButton(evt);
+        }
+        else { // press to stop
+          // ui
+          $(thiz).html(ready_text);
+          $(thiz).removeClass('btn-danger');
+          $(thiz).addClass('btn-primary');
+
+          // stop
+          recognizing = false;
+          recognition.stop();
+        }
+      });
+
+    </script>
+
+  </body>
+</html>
