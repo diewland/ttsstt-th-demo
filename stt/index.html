@@ -152,7 +152,7 @@
 
           var transcript = event.results[i][0].transcript;
           var confidence = event.results[i][0].confidence;
-          var isFinal = event.results[i].isFinal //&& (confidence > 0);
+          var isFinal = event.results[i].isFinal && (confidence > 0);
 
           if (isFinal) {
             /*
