@@ -77,6 +77,19 @@
         rateValue.textContent = rate.value;
       }
 
+      // lang
+      $('#cmb-lang').change((evt) => {
+        let lang = $(evt.target).val();
+        let msg = '';
+        if(lang == 'th-TH'){
+          msg = 'สวัสดีครับ คุณลูกค้ารับอะไรดีครับ ?';
+        }
+        else if(lang == 'en-US'){
+          msg = 'Hello, Welcome to coffee shop, Can I help you ?';
+        }
+        $('#msg').val(msg);
+      });
+
       // speak
       $('#btn-speak').click((evt) => {
         let thiz = evt.target;
