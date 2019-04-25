@@ -25,8 +25,14 @@
     <div class='container'>
 
       <h1>Speech to text Demo</h1>
+
       <button type="button" id='btn-transcribe' class="btn btn-primary btn-lg my-3">Transcribe</button>
+      <select id='cmb-lang' class="custom-select" style='width: 120px;'>
+        <option value='th-TH'>Thai</option>
+        <option value='en-US'>English</option>
+      </select>
       <span id='info'></span>
+
       <blockquote class="blockquote">
         <div id="results">
           <span class="final" id="final_span"></span>
@@ -80,7 +86,7 @@
           return;
         }
         final_transcript = '';
-        recognition.lang = 'th-TH';
+        recognition.lang = $('#cmb-lang').val();
         recognition.start();
         ignore_onend = false;
         final_span.innerHTML = '';

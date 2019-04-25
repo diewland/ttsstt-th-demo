@@ -48,6 +48,10 @@
         <div class="clearfix"></div>
       </div>
       <button type="button" id='btn-speak' class="btn btn-primary btn-lg my-3">Speak</button>
+      <select id='cmb-lang' class="custom-select" style='width: 120px;'>
+        <option value='th-TH'>Thai</option>
+        <option value='en-US'>English</option>
+      </select>
 
     </div>
 
@@ -82,7 +86,7 @@
         $(thiz).addClass('btn-danger');
 
         var utterThis = new SpeechSynthesisUtterance($('#msg').val());
-        utterThis.lang = 'th-TH';
+        utterThis.lang = $('#cmb-lang').val();
         utterThis.pitch = pitch.value;
         utterThis.rate = rate.value;
         synth.speak(utterThis);
