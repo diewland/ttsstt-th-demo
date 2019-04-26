@@ -19,13 +19,13 @@
       }
     </style>
 
-    <title>Echobot Demo</title>
+    <title>Yes Sir Bot</title>
   </head>
   <body>
     <div class='container'>
 
-      <h1>Echobot Demo</h1>
-      <button type="button" id='btn-transcribe' class="btn btn-primary btn-lg my-3">Press & Speak</button>
+      <h1>Yes Sir Bot</h1>
+      <button type="button" id='btn-transcribe' class="btn btn-primary btn-lg my-3">Speak</button>
       <span id='info'></span>
       <blockquote class="blockquote">
         <div id="results">
@@ -100,6 +100,36 @@
         synth.speak(utterThis);
       }
 
+      function agree_bot(msg){
+        console.log(msg);
+        if(!msg){
+          return;
+        }
+        var reply;
+        if(msg.indexOf("สวัสดี") > -1){
+          reply = 'สวัสดีครับ';
+        }
+        if(msg.indexOf("สิ่งนั้น") > -1){
+          reply = 'สิ่งนั้นคือสิ่งไหนครับ ?';
+        }
+        else {
+          var rr = [
+            'เห็นด้วยครับ',
+            'คิดอย่างนั้นเหมือนกันคับ',
+            'ประมาณนั้นคับ',
+            'ใช่คับ',
+            'ครับ',
+            'เราใจตรงกันครับ',
+            'ถูกต้องที่สุด',
+            'คนส่วนใหญ่น่าจะคิดเหมือนกันครับ',
+            'ใช่เลยครับ',
+            'เห็นด้วย 80% ครับ',
+          ];
+          reply = rr[ Math.floor(Math.random() * rr.length) ];
+        }
+        speak(reply);
+      }
+
       // initialize recognition
       var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
       var recognition = new SpeechRecognition();
@@ -141,6 +171,10 @@
           return;
         }
         showInfo('');
+
+        // speak agree
+        var msg = $('#final_span').html();
+        agree_bot(msg);
       };
 
       recognition.onresult = function(event) {
@@ -180,7 +214,7 @@
       // handle transcribe button
       $('#btn-transcribe').click((evt) => {
         let thiz = evt.target;
-        let ready_text = 'Press & Speak';
+        let ready_text = 'Speak';
         let working_text = 'Working...';
         let working = $(thiz).html() == working_text;
 
@@ -189,7 +223,6 @@
           $(thiz).html(working_text);
           $(thiz).removeClass('btn-primary');
           $(thiz).addClass('btn-danger');
-          $(thiz).attr('disabled', true);
 
           // start
           startButton(evt);
@@ -199,15 +232,10 @@
           $(thiz).html(ready_text);
           $(thiz).removeClass('btn-danger');
           $(thiz).addClass('btn-primary');
-          $(thiz).attr('disabled', false);
 
           // stop
           recognizing = false;
           recognition.stop();
-
-          // echo
-          var transcribed_text = $('#final_span').html();
-          speak("ชั้นได้ยินคุณพูดว่า " + transcribed_text);
         }
       });
 
