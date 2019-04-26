@@ -92,11 +92,15 @@
         start_timestamp = event.timeStamp;
       }
 
-      function speak(msg){
+      function speak(msg, options){
         var utterThis = new SpeechSynthesisUtterance(msg);
-        utterThis.lang = 'th-TH';
-        utterThis.pitch = 1;
-        utterThis.rate = 1;
+        var options = options || {};
+        var lang = options.lang || 'th-TH';
+        var pitch = options.pitch || 1;
+        var rate = options.rate || 1;
+        utterThis.lang = lang;
+        utterThis.pitch = pitch;
+        utterThis.rate = rate;
         synth.speak(utterThis);
       }
 
@@ -105,12 +109,27 @@
         if(!msg){
           return;
         }
-        var reply;
         if(msg.indexOf("สวัสดี") > -1){
-          reply = 'สวัสดีครับ';
+          speak('สวัสดีครับ');
         }
-        if(msg.indexOf("สิ่งนั้น") > -1){
-          reply = 'สิ่งนั้นคือสิ่งไหนครับ ?';
+        else if(msg.indexOf("สิ่งนั้น") > -1){
+          speak('สิ่งนั้นคือสิ่งไหนครับ ?');
+        }
+        else if(msg.toLowerCase().indexOf("the toys") > -1){
+          speak('เพียงแค่ฝนตกลงที่หน้าต่าง ในบางครา');
+          speak('เพียงแค่ฝนตกลงในวันหยุด ในตอนเช้า');
+          speak('มันก็อาจจะมี');
+          speak('นิดเดียว', { pitch: 5, rate: 0.1 });
+          speak('ที่คิดถึงเธอ');
+          speak('มันก็อาจจะเป็น');
+          speak('ครั้งเดียว', { pitch: 5, rate: 0.1 });
+          speak('ที่บอกรักเธอ');
+          speak('เพียงแค่');
+          speak('ฉันเองก็ไม่รู้ว่า');
+          speak('ในทุกๆวันที่มีแต่เธอยังคงละเมอและเพ้อทุกครั้งที่มองขึ้นไป', { pitch: 2, rate: 5 });
+          speak('บนท้องฟ้า  หยดน้ำค้าง  ตกกระทบ  ในตาฉัน');
+          speak('แล้วในวันนี้พรุ่งนี้จะเป็นยังไงจะเดินจะกินจะนอนจนวันนึงให้วันเวลาเดินไปเท่าไร', { pitch: 2, rate: 5 });
+          speak('แต่สุดท้าย  แดดยามเช้า  ก็ไม่สดใส');
         }
         else {
           var rr = [
@@ -123,11 +142,11 @@
             'ถูกต้องที่สุด',
             'คนส่วนใหญ่น่าจะคิดเหมือนกันครับ',
             'ใช่เลยครับ',
-            'เห็นด้วย 80% ครับ',
+            `เห็นด้วย ${Math.floor(Math.random() * 51) + 50}% ครับ`,
           ];
-          reply = rr[ Math.floor(Math.random() * rr.length) ];
+          var reply = rr[ Math.floor(Math.random() * rr.length) ];
+          speak(reply);
         }
-        speak(reply);
       }
 
       // initialize recognition
